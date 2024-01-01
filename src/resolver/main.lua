@@ -62,7 +62,11 @@ local function read_bang(bang, str)
   end
 end
 
-regenny:add_address_resolver(function(str)
+if _G.csgenny_resolver then
+  regenny:remove_address_resolver(_G.csgenny_resolver)
+end
+
+_G.csgenny_resolver = regenny:add_address_resolver(function(str)
   local instance_bang = read_bang("instance", str)
   if instance_bang then
     local instance = class_instances[instance_bang]

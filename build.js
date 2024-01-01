@@ -12,7 +12,17 @@ for (const project of projects) {
     paths: ["?", "?.lua", path.join("src", project, "?.lua")],
     ignoredModuleNames: ["io"]
   });
-  const minified = luamin.minify(out);
+  const wrapped = `
+local function main()
+${out}
+end
+
+local success, err = pcall(main)
+if not success then
+  print("Error loading ${project}: " .. err)
+end
+`.trim();
+  const minified = luamin.minify(wrapped);
 
   if (!fs.existsSync("dist")) fs.mkdirSync("dist");
   fs.writeFileSync(path.join("dist", `${project}.lua`), minified);
